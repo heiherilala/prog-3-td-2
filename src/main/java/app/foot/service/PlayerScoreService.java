@@ -36,25 +36,32 @@ public class PlayerScoreService {
     @Transactional
     public Match addPlayerScorer(List<PlayerScorer> playerScorers , int matchId) {
         List<PlayerScoreEntity> playerScoreEntities = new ArrayList<>();
+        MatchEntity match = matchRepository.findById(matchId).orElseThrow(
+                ()->new NotFoundException("math not found")
+        );
         for (PlayerScorer playerScorer: playerScorers) {
             PlayerScoreEntity playerScoreEntity = mapper.newDomaintoEntity(playerScorer, matchId);
-            /*
+
             PlayerEntity playerEntityConcerned = playerRepository.findById(playerScorer.getPlayer().getId()).orElseThrow(
                     () -> new NotFoundException("player not found")
             );
+            /*
             Player addedPlayer = playerMapper.toDomain(playerEntityConcerned);
             if (!addedPlayer.equals(playerScorer.getPlayer())) {
                 throw new BadRequestException("player number "+ playerEntityConcerned.getId() + " is not the same as in base");
             }
             */
+            if ((playerEntityConcerned.getTeam().getId() != match.getTeamB().getId())&&(playerEntityConcerned.getTeam().getId() != match.getTeamA().getId())) {
+                throw new BadRequestException("player N°" + playerScorer.getPlayer().getId() + "is not in TeamA or in TeamB");
+            }
             playeScoreEntityValidator.accept(playerScoreEntity);
             playerScoreEntities.add(playerScoreEntity);
         }
 
         repository.saveAll(playerScoreEntities);
-        MatchEntity match = matchRepository.findById(matchId).orElseThrow(
+        MatchEntity newmatch = matchRepository.findById(matchId).orElseThrow(
                 ()->new NotFoundException("math not found")
         );
-        return matchMapper.toDomain(match);
+        return matchMapper.toDomain(newmatch);
     }
 }
