@@ -45,15 +45,12 @@ public class PlayerScoreService {
             PlayerEntity playerEntityConcerned = playerRepository.findById(playerScorer.getPlayer().getId()).orElseThrow(
                     () -> new NotFoundException("player not found")
             );
-            /*
-            Player addedPlayer = playerMapper.toDomain(playerEntityConcerned);
-            if (!addedPlayer.equals(playerScorer.getPlayer())) {
-                throw new BadRequestException("player number "+ playerEntityConcerned.getId() + " is not the same as in base");
-            }
-            */
+            if (playerScorer.getPlayer().getIsGuardian()!=playerEntityConcerned.isGuardian()) {
+                throw new BadRequestException("player N°" + playerScorer.getPlayer().getId() + " IsGuardian expect to be " + playerEntityConcerned.isGuardian());
+            };
             if ((playerEntityConcerned.getTeam().getId() != match.getTeamB().getId())&&(playerEntityConcerned.getTeam().getId() != match.getTeamA().getId())) {
-                throw new BadRequestException("player N°" + playerScorer.getPlayer().getId() + "is not in TeamA or in TeamB");
-            }
+                throw new BadRequestException("player N°" + playerScorer.getPlayer().getId() + " is not in TeamA or in TeamB");
+            };
             playeScoreEntityValidator.accept(playerScoreEntity);
             playerScoreEntities.add(playerScoreEntity);
         }
