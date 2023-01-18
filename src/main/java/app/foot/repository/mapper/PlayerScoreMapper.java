@@ -6,7 +6,6 @@ import app.foot.repository.MatchRepository;
 import app.foot.repository.entity.MatchEntity;
 import app.foot.repository.entity.PlayerScoreEntity;
 import app.foot.repository.entity.TeamEntity;
-import app.foot.repository.entity.exception.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -24,9 +23,7 @@ public class PlayerScoreMapper {
     }
     public PlayerScoreEntity newDomaintoEntity(PlayerScorer domain, int matchId) {
         PlayerScoreEntity playerScoreEntity = new PlayerScoreEntity();
-        MatchEntity match = matchRepository.findById(matchId).orElseThrow(
-                ()-> new NotFoundException("math not found")
-        );
+        MatchEntity match = matchRepository.getReferenceById(matchId);
         playerScoreEntity.setPlayer(playerMapper.toEntity(domain.getPlayer()));
         playerScoreEntity.setMinute(domain.getMinute());
         playerScoreEntity.setMatch(match);
