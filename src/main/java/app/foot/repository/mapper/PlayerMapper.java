@@ -20,7 +20,7 @@ public class PlayerMapper {
     }
     public PlayerEntity toEntity(Player domain) {
         return playerRepository.findById(domain.getId()).orElseThrow(
-                ()-> new NotFoundException("not found player")
+                ()-> new NotFoundException("player N°" + domain.getId() + " not found")
         );
     }
 }

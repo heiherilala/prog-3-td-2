@@ -43,8 +43,11 @@ public class PlayerScoreService {
             PlayerScoreEntity playerScoreEntity = mapper.newDomaintoEntity(playerScorer, matchId);
 
             PlayerEntity playerEntityConcerned = playerRepository.findById(playerScorer.getPlayer().getId()).orElseThrow(
-                    () -> new NotFoundException("player not found")
+                    () -> new NotFoundException("player N°" + playerScorer.getPlayer().getId() + " not found")
             );
+            if (!playerScorer.getPlayer().getName().equals(playerEntityConcerned.getName())) {
+                throw new BadRequestException("player N°" + playerScorer.getPlayer().getId() + " IsGuardian expect to be " + playerEntityConcerned.getName()+ " not "+ playerScorer.getPlayer().getName());
+            };
             if (playerScorer.getPlayer().getIsGuardian()!=playerEntityConcerned.isGuardian()) {
                 throw new BadRequestException("player N°" + playerScorer.getPlayer().getId() + " IsGuardian expect to be " + playerEntityConcerned.isGuardian());
             };
