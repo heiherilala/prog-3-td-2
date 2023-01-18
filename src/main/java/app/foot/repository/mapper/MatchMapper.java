@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class MatchMapper {
     private final TeamMapper teamMapper;
-    private final PlayerMapper playerMapper;
+    private final PlayerScoreMapper playerMapper;
 
     public Match toDomain(MatchEntity matchEntity) {
         List<PlayerScorer> teamBScorers = getTeamScorers(matchEntity, matchEntity.getTeamB());
