@@ -1,14 +1,16 @@
 package app.foot.repository.mapper;
 
 import app.foot.model.Player;
-import app.foot.model.PlayerScorer;
+import app.foot.repository.PlayerRepository;
 import app.foot.repository.entity.PlayerEntity;
-import app.foot.repository.entity.PlayerScoreEntity;
+import app.foot.repository.entity.exception.NotFoundException;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@AllArgsConstructor
 public class PlayerMapper {
-
+    private final PlayerRepository playerRepository;
     public Player toDomain(PlayerEntity entity) {
         return Player.builder()
                 .id(entity.getId())
@@ -16,12 +18,9 @@ public class PlayerMapper {
                 .isGuardian(entity.isGuardian())
                 .build();
     }
-
-    public PlayerScorer toDomain(PlayerScoreEntity entity) {
-        return PlayerScorer.builder()
-                .player(toDomain(entity.getPlayer()))
-                .minute(entity.getMinute())
-                .isOwnGoal(entity.isOwnGoal())
-                .build();
+    public PlayerEntity toEntity(Player domain) {
+        return playerRepository.findById(domain.getId()).orElseThrow(
+                ()-> new NotFoundException("player N°" + domain.getId() + " not found")
+        );
     }
 }
