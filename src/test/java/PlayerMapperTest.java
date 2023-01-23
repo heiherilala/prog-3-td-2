@@ -42,7 +42,7 @@ public class PlayerMapperTest {
     void player_scorer_to_entity_ok() {
         when(matchRepository.findById(1)).thenReturn(Optional.ofNullable(MatchEntity.builder().build()));
         when(playerRepository.findById(1)).thenReturn(Optional.ofNullable(playerEntity()));
-        PlayerScoreEntity expected = playerScoreEntity();
+        PlayerScoreEntity expected = playerScoreEntityWithoutId();
         PlayerScoreEntity actual = subject.toEntity(1,playerScore());
         assertEquals(expected, actual);
     }
@@ -71,6 +71,14 @@ public class PlayerMapperTest {
     private static PlayerScoreEntity playerScoreEntity() {
         return PlayerScoreEntity.builder()
                 .id(1)
+                .minute(45)
+                .player(playerEntity())
+                .match(MatchEntity.builder().build())
+                .ownGoal(true)
+                .build();
+    }
+    private static PlayerScoreEntity playerScoreEntityWithoutId() {
+        return PlayerScoreEntity.builder()
                 .minute(45)
                 .player(playerEntity())
                 .match(MatchEntity.builder().build())
