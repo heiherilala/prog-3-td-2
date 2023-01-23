@@ -32,4 +32,6 @@ public class GoalValidator implements Consumer<PlayerScorer> {
       throw new RuntimeException(exceptionBuilder.toString());
     }
   }
+
+
 }
