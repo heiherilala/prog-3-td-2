@@ -6,6 +6,7 @@ import app.foot.model.Team;
 import app.foot.repository.entity.PlayerEntity;
 import app.foot.repository.entity.PlayerScoreEntity;
 import app.foot.repository.entity.TeamEntity;
+import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.function.Executable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,6 +33,14 @@ public class TestUtils {
                 .id(1)
                 .name("Rakoto")
                 .isGuardian(false)
+                .build();
+    }
+    public static app.foot.model.Player playerModelwithoutTeam() {
+        return app.foot.model.Player.builder()
+                .id(player1().getId())
+                .name(player1().getName())
+                .isGuardian(player1().getIsGuardian())
+                .teamName(null)
                 .build();
     }
 

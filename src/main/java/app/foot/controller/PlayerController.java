@@ -6,6 +6,7 @@ import app.foot.service.PlayerService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,6 +32,16 @@ public class PlayerController {
                 .map(mapper::toDomain)
                 .collect(Collectors.toUnmodifiableList());
         return service.createPlayers(domain).stream()
+                .map(mapper::toRest)
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    @PutMapping("/players")
+    public List<Player> updatePlayers(@RequestBody List<Player> toCreate) {
+        List<app.foot.model.Player> domain = toCreate.stream()
+                .map(mapper::toDomain)
+                .collect(Collectors.toUnmodifiableList());
+        return service.updatePlayers(domain).stream()
                 .map(mapper::toRest)
                 .collect(Collectors.toUnmodifiableList());
     }

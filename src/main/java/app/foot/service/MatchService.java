@@ -31,7 +31,6 @@ public class MatchService {
   }
 
   public Match addGoals(int matchId, List<PlayerScorer> scorers) {
-    getMatchById(matchId);
     scoreService.addGoals(matchId, scorers);
     return getMatchById(matchId);
   }

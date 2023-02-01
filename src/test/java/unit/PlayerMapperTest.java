@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static utils.TestUtils.*;
+import static utils.TestUtils.teamBarea;
 
 public class PlayerMapperTest {
     public static final int MATCH_ID = 1;
@@ -99,5 +100,18 @@ public class PlayerMapperTest {
                 .ownGoal(false)
                 .match(matchEntity1)
                 .build(), actual);
+    }
+    @Test
+    void player_to_entity_ok(){
+        when(teamRepositoryMock.findByName(teamBarea().getName()))
+                .thenReturn(teamBarea());
+        PlayerEntity actual = subject.toEntity(playerModelRakoto(playerEntityRakoto(teamBarea())));
+        assertEquals(playerEntityRakoto(teamBarea()), actual);
+    }
+    @Test
+    void player_to_entity_without_team_name_ko(){
+        String message = "Team_name in player_entity cant be null";
+        when(teamRepositoryMock.findByName(null)).thenThrow(new NullPointerException(message));
+        assertThrowsExceptionMessage(message, NullPointerException.class, () -> subject.toEntity(playerModelwithoutTeam()));
     }
 }
