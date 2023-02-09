@@ -8,4 +8,8 @@ public class ApiException extends RuntimeException {
     public ApiException(int code, String message) {
         super(HttpStatus.valueOf(code) + " : " + message);
     }
+
+    public ApiException(String message) {
+        super(message);
+    }
 }

@@ -2,6 +2,7 @@ package integration;
 
 import app.foot.FootApi;
 import app.foot.controller.rest.*;
+import app.foot.exception.ApiException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static utils.TestUtils.assertThrowsExceptionMessage;
+import static utils.TestUtils.checkApiException;
 
 @SpringBootTest(classes = FootApi.class)
 @AutoConfigureMockMvc
@@ -73,53 +75,56 @@ class MatchIntegrationTest {
     @Test
     void add_goal_in_match_too_small_time_ko() throws Exception {
         String matchId = "3";
-        String errorMessage = "Request processing failed: app.foot.exception.BadRequestException: 400 BAD_REQUEST : Player#"+playerScorerMachId3().getPlayer().getId()+" cannot score before before minute 0.";
-        assertThrowsExceptionMessage(errorMessage, ServletException.class,
-                ()->mockMvc.perform(post("/matches/"+matchId+"/goals")
+        String errorMessage = "400 BAD_REQUEST : Player#"+playerScorerMachId3().getPlayer().getId()+" cannot score before before minute 0.";
+        assertThrowsExceptionMessage(errorMessage, ApiException.class,
+                ()-> checkApiException(mockMvc.perform(post("/matches/"+matchId+"/goals")
                         .content(objectMapper.writeValueAsString(List.of(playerScorerMachId3().toBuilder().scoreTime(-1).build())))
                         .contentType("application/json"))
-                        .andExpect(status().isNotFound())
-        );
+                        .andExpect(status().isBadRequest())
+                        .andReturn()
+                        .getResponse()));
     }
     @Test
     void add_goal_in_match_too_big_time_ko() throws Exception {
         String matchId = "3";
-        String errorMessage = "Request processing failed: app.foot.exception.BadRequestException: 400 BAD_REQUEST : Player#J"+playerScorerMachId3().getPlayer().getId()+" cannot score before after minute 90.";
-        assertThrowsExceptionMessage(errorMessage, ServletException.class,
-                ()->mockMvc.perform(post("/matches/"+matchId+"/goals")
+        String errorMessage = "400 BAD_REQUEST : Player#J"+playerScorerMachId3().getPlayer().getId()+" cannot score before after minute 90.";
+        assertThrowsExceptionMessage(errorMessage, ApiException.class,
+                ()-> checkApiException(mockMvc.perform(post("/matches/"+matchId+"/goals")
                                 .content(objectMapper.writeValueAsString(List.of(playerScorerMachId3().toBuilder().scoreTime(99).build())))
                                 .contentType("application/json"))
-                        .andExpect(status().isNotFound())
+                        .andExpect(status().isBadRequest()).andReturn()
+                        .getResponse())
         );
     }
     @Test
     void add_goal_in_match_without_time_ko() throws Exception {
         String matchId = "3";
-        String errorMessage = "Request processing failed: app.foot.exception.BadRequestException: 400 BAD_REQUEST : Score minute is mandatory.";
-        assertThrowsExceptionMessage(errorMessage, ServletException.class,
-                ()->mockMvc.perform(post("/matches/"+matchId+"/goals")
+        String errorMessage = "400 BAD_REQUEST : Score minute is mandatory.";
+        assertThrowsExceptionMessage(errorMessage, ApiException.class,
+                ()-> checkApiException(mockMvc.perform(post("/matches/"+matchId+"/goals")
                                 .content(objectMapper.writeValueAsString(List.of(playerScorerMachId3().toBuilder().scoreTime(null).build())))
                                 .contentType("application/json"))
-                        .andExpect(status().isNotFound())
+                        .andExpect(status().isBadRequest()).andReturn()
+                        .getResponse())
         );
     }
     @Test
     void add_goal_in_match_by_guardian_ko() throws Exception {
         String matchId = "3";
-        String errorMessage = "Request processing failed: app.foot.exception.BadRequestException: 400 BAD_REQUEST : Player#"+player9().getId()+" is a guardian so they cannot score.";
-        assertThrowsExceptionMessage(errorMessage, ServletException.class,
-                ()->mockMvc.perform(post("/matches/"+matchId+"/goals")
+        String errorMessage = "400 BAD_REQUEST : Player#"+player9().getId()+" is a guardian so they cannot score.";
+        assertThrowsExceptionMessage(errorMessage, ApiException.class,
+                ()-> checkApiException(mockMvc.perform(post("/matches/"+matchId+"/goals")
                                 .content(objectMapper.writeValueAsString(List.of(playerScorerMachId3().toBuilder().player(player9()).build())))
                                 .contentType("application/json"))
-                        .andExpect(status().isNotFound())
+                        .andExpect(status().isBadRequest()).andReturn().getResponse())
         );
     }
     @Test
     void read_match_by_id_ko() throws Exception {
         String matchId = "20";
-        String errorMessage = "Request processing failed: java.lang.RuntimeException: Match#"+matchId+" not found.";
-        assertThrowsExceptionMessage(errorMessage, ServletException.class,
-                ()->mockMvc.perform(get("/matches/"+matchId)).andExpect(status().isNotFound())
+        String errorMessage = "404 NOT_FOUND : Match#"+matchId+" not found.";
+        assertThrowsExceptionMessage(errorMessage, ApiException.class,
+                ()->checkApiException(mockMvc.perform(get("/matches/"+matchId)).andExpect(status().isNotFound()).andReturn().getResponse())
         );
     }
     private static int  numberAddingPostGoal=1;

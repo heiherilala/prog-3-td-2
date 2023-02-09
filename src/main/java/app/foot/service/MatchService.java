@@ -1,5 +1,6 @@
 package app.foot.service;
 
+import app.foot.exception.NotFoundException;
 import app.foot.model.Match;
 import app.foot.model.PlayerScorer;
 import app.foot.repository.MatchRepository;
@@ -26,7 +27,7 @@ public class MatchService {
   public Match getMatchById(int matchId) {
     return mapper.toDomain(
         repository.findById(matchId)
-            .orElseThrow(() -> new RuntimeException("Match#" + matchId + " not found."))
+            .orElseThrow(() -> new NotFoundException("Match#" + matchId + " not found."))
     );
   }
 
