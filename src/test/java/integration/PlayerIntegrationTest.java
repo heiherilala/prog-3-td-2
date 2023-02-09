@@ -2,6 +2,7 @@ package integration;
 
 import app.foot.FootApi;
 import app.foot.controller.rest.Player;
+import app.foot.exception.ApiException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
@@ -24,6 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static utils.TestUtils.assertThrowsExceptionMessage;
+import static utils.TestUtils.checkApiException;
 
 @SpringBootTest(classes = FootApi.class)
 @AutoConfigureMockMvc
@@ -111,58 +113,58 @@ class PlayerIntegrationTest {
     }
     @Test
     void update_players_with_name_empty_ko() throws Exception {
-        String errorMessage = "Request processing failed: app.foot.exception.BadRequestException: 400 BAD_REQUEST : Player#"+player1().getId()+" have to have name.";
-        assertThrowsExceptionMessage(errorMessage, ServletException.class,
-                ()->mockMvc.perform(put("/players")
+        String errorMessage = "400 BAD_REQUEST : Player#"+player1().getId()+" have to have name.";
+        assertThrowsExceptionMessage(errorMessage, ApiException.class,
+                ()->checkApiException(mockMvc.perform(put("/players")
                                 .content(objectMapper.writeValueAsString(List.of(player1().toBuilder().name("").build())))
                                 .contentType("application/json")
                                 .accept("application/json"))
-                        .andExpect(status().isNotFound())
+                        .andExpect(status().isBadRequest()).andReturn().getResponse())
         );
     }
     @Test
     void update_players_with_name_null_ko() throws Exception {
-        String errorMessage = "Request processing failed: app.foot.exception.BadRequestException: 400 BAD_REQUEST : Player#"+player1().getId()+" have to have name.";
-        assertThrowsExceptionMessage(errorMessage, ServletException.class,
-                ()->mockMvc.perform(put("/players")
+        String errorMessage = "400 BAD_REQUEST : Player#"+player1().getId()+" have to have name.";
+        assertThrowsExceptionMessage(errorMessage, ApiException.class,
+                ()->checkApiException(mockMvc.perform(put("/players")
                                 .content(objectMapper.writeValueAsString(List.of(player1().toBuilder().name(null).build())))
                                 .contentType("application/json")
                                 .accept("application/json"))
-                        .andExpect(status().isNotFound())
+                        .andExpect(status().isBadRequest()).andReturn().getResponse())
         );
     }
     @Test
     void update_players_with_team_name_change_ko() throws Exception {
-        String errorMessage = "Request processing failed: app.foot.exception.BadRequestException: 400 BAD_REQUEST : Team can't change in Player with id:"+player1().getId()+".";
-        assertThrowsExceptionMessage(errorMessage, ServletException.class,
-                ()->mockMvc.perform(put("/players")
+        String errorMessage = "400 BAD_REQUEST : Team can't change in Player with id:"+player1().getId()+".";
+        assertThrowsExceptionMessage(errorMessage, ApiException.class,
+                ()->checkApiException(mockMvc.perform(put("/players")
                                 .content(objectMapper.writeValueAsString(List.of(player1().toBuilder().teamName(player1().getTeamName()+"change").build())))
                                 .contentType("application/json")
                                 .accept("application/json"))
-                        .andExpect(status().isNotFound())
+                        .andExpect(status().isBadRequest()).andReturn().getResponse())
         );
     }
     @Test
     void update_players_with_bad_id_ko() throws Exception {
         int bad_id = 5000;
-        String errorMessage = "Request processing failed: app.foot.exception.BadRequestException: 400 BAD_REQUEST : can't update new id "+bad_id+".";
-        assertThrowsExceptionMessage(errorMessage, ServletException.class,
-                ()->mockMvc.perform(put("/players")
+        String errorMessage = "400 BAD_REQUEST : can't update new id "+bad_id+".";
+        assertThrowsExceptionMessage(errorMessage, ApiException.class,
+                ()->checkApiException(mockMvc.perform(put("/players")
                                 .content(objectMapper.writeValueAsString(List.of(player1().toBuilder().id(bad_id).build())))
                                 .contentType("application/json")
                                 .accept("application/json"))
-                        .andExpect(status().isNotFound())
+                        .andExpect(status().isBadRequest()).andReturn().getResponse())
         );
     }
     @Test
     void update_players_without_id_ko() throws Exception {
-        String errorMessage = "Request processing failed: app.foot.exception.BadRequestException: 400 BAD_REQUEST : Player#null have to have id.";
-        assertThrowsExceptionMessage(errorMessage, ServletException.class,
-                ()->mockMvc.perform(put("/players")
+        String errorMessage = "400 BAD_REQUEST : Player#null have to have id.";
+        assertThrowsExceptionMessage(errorMessage, ApiException.class,
+                ()->checkApiException(mockMvc.perform(put("/players")
                                 .content(objectMapper.writeValueAsString(List.of(player1().toBuilder().id(null).build())))
                                 .contentType("application/json")
                                 .accept("application/json"))
-                        .andExpect(status().isNotFound())
+                        .andExpect(status().isBadRequest()).andReturn().getResponse())
         );
     }
 
