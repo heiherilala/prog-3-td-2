@@ -16,8 +16,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -31,6 +33,7 @@ class MatchIntegrationTest {
     private MockMvc mockMvc;
     private final ObjectMapper objectMapper = new ObjectMapper()
             .findAndRegisterModules();  //Allow 'java.time.Instant' mapping
+    private final Logger logger = Logger.getLogger(MatchIntegrationTest.class.getName());
 
     @Test
     void read_match_by_id_ok() throws Exception {
@@ -55,6 +58,8 @@ class MatchIntegrationTest {
 
         assertEquals(HttpStatus.OK.value(), response.getStatus());
         assertEquals(3, actual.size());
+        logger.info(expectedMatch2().toString());
+        assertTrue(actual.contains(expectedMatch2()));
     }
     @Test
     void add_goal_in_match_ok() throws Exception {
